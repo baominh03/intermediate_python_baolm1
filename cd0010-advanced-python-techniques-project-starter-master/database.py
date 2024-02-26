@@ -48,9 +48,9 @@ class NEODatabase:
         self._name_to_neo = {neo.name: neo for neo in self._neos}
         # TODO: Link together the NEOs and their close approaches.
         for approach in self._approaches:
-            if approach.designation in self._des_to_idx.keys():
-                approach.neo = self._neos[self._des_to_idx[approach.designation]]
-                self._neos[self._des_to_idx[approach.designation]].approaches.append(approach)
+            if approach._designation in self._des_to_idx.keys():
+                approach.neo = self._neos[self._des_to_idx[approach._designation]]
+                self._neos[self._des_to_idx[approach._designation]].approaches.append(approach)
 
 
     def get_neo_by_designation(self, designation):
@@ -101,9 +101,10 @@ class NEODatabase:
         :return: A stream of matching `CloseApproach` objects.
         """
         # TODO: Generate `CloseApproach` objects that match all of the filters.
-        for approach in self._approaches:
-            yield approach
+        if not filters:
+            for approach in self._approaches:
+                yield approach
         else:
             for approach in self._approaches:
-                if all(f(approach) for f in filters):
+                if (all(map(lambda x: x(approach), filters.values()))):
                     yield approach

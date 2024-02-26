@@ -25,14 +25,26 @@ def load_neos(neo_csv_path="data/neos.csv"):
     :return: A collection of `NearEarthObject`s.
     """
     # TODO: Load NEO data from the given CSV file.
-    neos = []
-    with open(neo_csv_path) as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            diameter = float(row["diameter"]) if row["diameter"] else None
-            hazardous = True if row["pha"] == "Y" else False
-            name = row["name"] or None
-            neos.append(NearEarthObject(row["pdes"], name, diameter, hazardous))
+    with open(neo_csv_path, "r") as file:
+        reader = csv.DictReader(file)
+        neos = []
+        for line in reader:
+            line["name"] = line["name"] or None
+            line["diameter"] = float(line["diameter"]) if line["diameter"] else None
+            line["pha"] = False if line["pha"] in ["", "N"] else True
+            try:
+                neo = NearEarthObject(
+                    designation = line["pdes"],
+                    name = line["name"],
+                    diameter = line["diameter"],
+                    hazardous = line["pha"]
+                )
+            except Exception as e:
+                print(e)
+                continue
+
+            neos.append(neo)
+
     return neos
 
 
@@ -43,15 +55,22 @@ def load_approaches(cad_json_path):
     :return: A collection of `CloseApproach`es.
     """
     # TODO: Load close approach data from the given JSON file.
-    required_fields = ("des", "cd", "dist", "v_rel")
-    approaches = []
-    with open(cad_json_path) as f:
-        js = json.load(f)
-        field_indices = {field_name: js["fields"].index(field_name) for field_name in required_fields}
-        for row in js["data"]:
-            data = {field_name: row[field_idx] for field_name, field_idx in field_indices.items()}
-            time = data["cd"]
-            dist = float(data["dist"])
-            velocity = float(data["v_rel"])
-            approaches.append(CloseApproach(data["des"], time, dist, velocity))
+    with open(cad_json_path, "r") as file:
+        reader = json.load(file)
+        reader = [dict(zip(reader["fields"], data)) for data in reader["data"]]
+        approaches = []
+        for line in reader:
+            try:
+                approach = CloseApproach(
+                    designation = line["des"],
+                    time = line["cd"],
+                    distance = float(line["dist"]),
+                    velocity = float(line["v_rel"])
+                )
+            except Exception as e:
+                print(e)
+                continue
+
+            approaches.append(approach)
+            
     return approaches

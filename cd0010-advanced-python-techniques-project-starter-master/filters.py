@@ -17,6 +17,7 @@ iterator.
 You'll edit this file in Tasks 3a and 3c.
 """
 import operator
+import itertools
 
 
 class UnsupportedCriterionError(NotImplementedError):
@@ -71,6 +72,72 @@ class AttributeFilter:
     def __repr__(self):
         return f"{self.__class__.__name__}(op=operator.{self.op.__name__}, value={self.value})"
 
+# Refer https://knowledge.udacity.com/questions/779856
+class DateFilter(AttributeFilter):
+    """Sub-class for date filters"""
+    @classmethod
+    def get(cls, approach):
+        """
+        Returns approach time as datetime.datetime object.
+        Args:
+            approach (CloseApproach): From CloseApproach object
+        Returns:
+            [datetime.datetime]: time to date time
+        """
+        return approach.time.date()
+
+class DistanceFilter(AttributeFilter):
+    """Sub-class for distance filters"""
+    @classmethod
+    def get(cls, approach):
+        """
+        Returns approach distance.
+        Args:
+            approach (CloseApproach): From CloseApproach object
+        Returns:
+            [float]: distance
+        """
+        return approach.distance
+
+class VelocityFilter(AttributeFilter):
+    """Sub-class for velocity filters"""
+    @classmethod
+    def get(cls, approach):
+        """
+        Returns approach velocity.
+        Args:
+            approach (CloseApproach): From CloseApproach object
+        Returns:
+            [float]: velocity
+        """
+        
+        return approach.velocity
+
+class DiameterFilter(AttributeFilter):
+    """Sub-class for diameter filters"""
+    @classmethod
+    def get(cls, approach):
+        """
+        Returns approach diameter.
+        Args:
+            approach (CloseApproach): From CloseApproach object
+        Returns:
+            [float]: diameter
+        """
+        return approach.neo.diameter
+
+class HazardousFilter(AttributeFilter):
+    """Sub-class for hazardous filters"""
+    @classmethod
+    def get(cls, approach):
+        """
+        Returns hazardous attribute of the neo.
+        Args:
+            approach (CloseApproach): From CloseApproach object
+        Returns:
+            [float]: hazardous
+        """
+        return approach.neo.hazardous
 
 def create_filters(
         date=None, start_date=None, end_date=None,
@@ -109,7 +176,29 @@ def create_filters(
     :return: A collection of filters for use with `query`.
     """
     # TODO: Decide how you will represent your filters.
-    return ()
+    # Refer https://knowledge.udacity.com/questions/779856
+    created_filters = {}
+    if date:
+        created_filters["date"] = DateFilter(operator.eq, date)
+    if start_date:
+        created_filters["start_date"] = DateFilter(operator.ge, start_date)
+    if end_date:
+        created_filters["end_date"] = DateFilter(operator.le, end_date)
+    if distance_min:
+        created_filters["distance_min"] = DistanceFilter(operator.ge, distance_min)
+    if distance_max:
+        created_filters["distance_max"] = DistanceFilter(operator.le, distance_max)
+    if velocity_min:
+        created_filters["velocity_min"] = VelocityFilter(operator.ge, velocity_min)
+    if velocity_max:
+        created_filters["velocity_max"] = VelocityFilter(operator.le, velocity_max)
+    if diameter_min:
+        created_filters["diameter_min"] = DiameterFilter(operator.ge, diameter_min)
+    if diameter_max:
+        created_filters["diameter_max"] = DiameterFilter(operator.le, diameter_max)
+    if hazardous is not None:
+        created_filters["hazardous"] = HazardousFilter(operator.eq, hazardous)
+    return created_filters
 
 
 def limit(iterator, n=None):
@@ -122,4 +211,7 @@ def limit(iterator, n=None):
     :yield: The first (at most) `n` values from the iterator.
     """
     # TODO: Produce at most `n` values from the given iterator.
-    return iterator
+    if n is None or n == 0:
+        return iterator
+    else:
+        return itertools.islice(iterator, n)
