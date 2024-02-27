@@ -32,6 +32,7 @@ class NearEarthObject:
     initialized to an empty collection, but eventually populated in the
     `NEODatabase` constructor.
     """
+
     def __init__(self, designation: str, name: str = None, diameter: float = float("nan"),
                  hazardous: bool = False, approaches: list = None):
         """Create a new `NearEarthObject`.
@@ -69,7 +70,7 @@ class NearEarthObject:
     
     #refer https://knowledge.udacity.com/questions/545014
     def serialize(self):
-        """Return self attributes"""
+        """Return self attributes."""
         return {
             "designation": self.designation,
             "name": self.name if self.name is not None else "Unknown name",
@@ -91,6 +92,7 @@ class CloseApproach:
     private attribute, but the referenced NEO is eventually replaced in the
     `NEODatabase` constructor.
     """
+
     def __init__(self, designation: str, time: str, distance: float, velocity: float):
         """Create a new `CloseApproach`.
 
@@ -135,7 +137,7 @@ class CloseApproach:
 
     #refer https://knowledge.udacity.com/questions/545014
     def serialize(self):
-        """Return self attributes"""
+        """Return self attributes."""
         return {
             "datetime_utc": datetime_to_str(self.time),
             "distance_au": self.distance,

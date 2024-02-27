@@ -39,6 +39,7 @@ class AttributeFilter:
     Concrete subclasses can override the `get` classmethod to provide custom
     behavior to fetch a desired attribute from the given `CloseApproach`.
     """
+
     def __init__(self, op, value):
         """Construct a new `AttributeFilter` from an binary predicate and a reference value.
 
@@ -70,28 +71,31 @@ class AttributeFilter:
         raise UnsupportedCriterionError
 
     def __repr__(self):
+        """
+        Return a string representation of the object that can be used to recreate the object.
+        
+        Returns:
+            str: A string representation of the object.
+        """
         return f"{self.__class__.__name__}(op=operator.{self.op.__name__}, value={self.value})"
 
 # Refer https://knowledge.udacity.com/questions/779856
 class DateFilter(AttributeFilter):
-    """Sub-class for date filters"""
+    """Sub-class for date filter."""
+
     @classmethod
     def get(cls, approach):
-        """
-        Returns approach time as datetime.datetime object.
-        Args:
-            approach (CloseApproach): From CloseApproach object
-        Returns:
-            [datetime.datetime]: time to date time
-        """
+        """Return approach time as datetime.datetime object."""
         return approach.time.date()
 
 class DistanceFilter(AttributeFilter):
-    """Sub-class for distance filters"""
+    """Sub-class for distance filters."""
+
     @classmethod
     def get(cls, approach):
         """
-        Returns approach distance.
+        Return approach distance.
+
         Args:
             approach (CloseApproach): From CloseApproach object
         Returns:
@@ -100,25 +104,28 @@ class DistanceFilter(AttributeFilter):
         return approach.distance
 
 class VelocityFilter(AttributeFilter):
-    """Sub-class for velocity filters"""
+    """Sub-class for velocity filters."""
+
     @classmethod
     def get(cls, approach):
         """
-        Returns approach velocity.
+        Return approach velocity.
+
         Args:
             approach (CloseApproach): From CloseApproach object
         Returns:
             [float]: velocity
         """
-        
         return approach.velocity
 
 class DiameterFilter(AttributeFilter):
-    """Sub-class for diameter filters"""
+    """Sub-class for diameter filters."""
+
     @classmethod
     def get(cls, approach):
         """
-        Returns approach diameter.
+        Return approach diameter.
+
         Args:
             approach (CloseApproach): From CloseApproach object
         Returns:
@@ -127,11 +134,13 @@ class DiameterFilter(AttributeFilter):
         return approach.neo.diameter
 
 class HazardousFilter(AttributeFilter):
-    """Sub-class for hazardous filters"""
+    """Sub-class for hazardous filters."""
+
     @classmethod
     def get(cls, approach):
         """
-        Returns hazardous attribute of the neo.
+        Return hazardous attribute of the neo.
+        
         Args:
             approach (CloseApproach): From CloseApproach object
         Returns:
