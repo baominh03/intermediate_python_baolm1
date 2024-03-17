@@ -1,7 +1,7 @@
 import random
 import os
 import requests
-from flask import Flask, render_template, abort, request
+from flask import Flask, render_template, request
 from MemeEngine import MemeEngine
 from QuoteEngine import Ingestor
 
@@ -65,23 +65,20 @@ def meme_form():
 def meme_post():
     """ Create a user defined meme """
 
-    # 1 
-    image_url = request.form['image_url']
-    body = request.form['body']
-    author = request.form['author']
-    r = requests.get(image_url, allow_redirects=True)
-    f_name = f'./{random.randint(0, 100000000)}.jpg'
-    img = open(f_name, 'wb')
-    img.write(r.content)
-    img.close()
-
-    meme = MemeEngine.MemeEngine('./static')
-    # 2
-    path = meme.make_meme(f_name, body, author)
-    print(f_name)
-    print(path)
-    # 3
-    os.remove(img)
+    try:
+        image_url = request.form['image_url']
+        r = requests.get(image_url, allow_redirects=True)
+        f_name = f'./static/{random.randint(0, 100000000)}.jpg'
+        img = open(f_name, 'wb')
+        img.write(r.content)
+        img.close()
+        meme = MemeEngine.MemeEngine('./static')
+        body = request.form['body']
+        author = request.form['author']
+        path = meme.make_meme(f_name, body, author)
+    except Exception:
+        print("Invalid URL")
+        return render_template('meme_error.html')
 
     return render_template('meme.html', path=path)
 
